@@ -17,7 +17,7 @@ contract TokenizeAsset is ERC721 {
 
     //array of all assests for sale
     Asset[] public assets;
-    uint256 tokenId;
+    uint256 tokenId = 1;
 
     //mapping between the user address and all the assest he has
     mapping(address => Asset[]) assetUserMapping;
@@ -30,7 +30,6 @@ contract TokenizeAsset is ERC721 {
 
     //function to list your asset for sale, unique ERC721 token will be generated for your asset
     function listAssetForSale(string memory _name, uint256 _price) public {
-        tokenId = assets.length + 1;
         Asset memory _asset;
         _asset.name = _name;
         _asset.price = _price;
@@ -41,6 +40,7 @@ contract TokenizeAsset is ERC721 {
         assetUserTokenMapping[msg.sender][tokenId] = _asset;
         tokenIdMapping[tokenId] = _asset;
         assets.push(_asset);
+        tokenId++;
     }
 
     //function to resale an existing asset
@@ -51,8 +51,8 @@ contract TokenizeAsset is ERC721 {
         assetUserTokenMapping[msg.sender][_tokenId] = _asset;
         tokenIdMapping[tokenId] = _asset;
         for (uint256 i = 0; i < assetUserMapping[msg.sender].length; i++) {
-            if (assetUserTokenMapping[msg.sender][i].tokenId == _tokenId) {
-                assetUserTokenMapping[msg.sender][i] = _asset;
+            if (assetUserMapping[msg.sender][i].tokenId == _tokenId) {
+                assetUserMapping[msg.sender][i].price = _price;
             }
         }
         assets.push(_asset);
@@ -80,7 +80,11 @@ contract TokenizeAsset is ERC721 {
         assetUserTokenMapping[_buyer][_tokenId] = _asset;
         tokenIdMapping[_tokenId] = _asset;
 
-        delete assets[_tokenId - 1];
+        for (uint256 j = 0; j < assets.length; j++) {
+            if (assets[j].tokenId == _tokenId) {
+                delete assets[j];
+            }
+        }
         for (uint256 i = 0; i < assetUserMapping[msg.sender].length; i++) {
             if (assetUserMapping[msg.sender][i].tokenId == _tokenId) {
                 delete assetUserMapping[msg.sender][i];
