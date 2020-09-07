@@ -71,9 +71,10 @@ contract TokenizeAsset is ERC721 {
     //function to transfer the ownership, delete the item from the sale list and to update the mappings
     function transferAssetOwnership(address _buyer, uint256 _tokenId) public {
         transferFrom(msg.sender, _buyer, _tokenId);
-        Asset _asset = assetUserTokenMapping[msg.sender][_tokenId];
-
-        _asset.previousOwners.push(msg.sender);
+        assetUserTokenMapping[msg.sender][_tokenId].previousOwners.push(
+            msg.sender
+        );
+        Asset memory _asset = assetUserTokenMapping[msg.sender][_tokenId];
 
         assetUserMapping[_buyer].push(_asset);
         assetUserTokenMapping[_buyer][_tokenId] = _asset;
